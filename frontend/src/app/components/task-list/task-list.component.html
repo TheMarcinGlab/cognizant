@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="header">Important Tasks</div>
+
+  <form class="add-form" (ngSubmit)="addTask()">
+    <mat-form-field appearance="outline">
+      <input matInput placeholder="New task" [(ngModel)]="newTask.title" name="label" required>
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Add</button>
+  </form>
+
+  <div *ngFor="let task of tasks" class="task-item">
+    <ng-container *ngIf="editingTaskId !== task.id; else editMode">
+      <span [ngClass]="{'task-label': true, 'completed': task.completed}">
+        {{ task.title }}
+      </span>
+<input type="checkbox" [checked]="task.completed" (change)="toggleCompleted(task)">
+      <span class="action-btns">
+        <button mat-icon-button color="accent" (click)="startEdit(task)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteTask(task)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </span>
+    </ng-container>
+    <ng-template #editMode>
+      <input matInput class="edit-input" [(ngModel)]="editTask.title" name="editLabel{{task.id}}">
+      <span class="action-btns">
+        <button mat-icon-button color="primary" (click)="saveEdit(task)">
+          <mat-icon>check</mat-icon>
+        </button>
+        <button mat-icon-button (click)="cancelEdit()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </span>
+    </ng-template>
+  </div>
+</div>
