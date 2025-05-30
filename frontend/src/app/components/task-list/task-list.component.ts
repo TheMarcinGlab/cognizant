@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TaskService } from '../../service/task.service';
-import { Task} from '../../model/task.model';
+import { Task } from '../../model/task.model';
 import { Label } from '../../model/label.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -12,7 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class TaskListComponent implements OnInit {
   tasks: Task[] = [];
   labels: Label[] = [];
-  newTask: Partial<Task> = { title: '', completed: false, labelId: 1 };
+  newTask: Partial<Task> = { title: '', completed: false, labelId: undefined };
   editingTaskId: number | null = null;
   editTask: Partial<Task> = {};
 
@@ -46,7 +46,7 @@ export class TaskListComponent implements OnInit {
     this.taskService.addTask(this.newTask).subscribe({
       next: task => {
         this.tasks.push(task);
-        this.newTask = { title: '', completed: false, labelId: 1 };
+        this.newTask = { title: '', completed: false, labelId: undefined };
         this.snackBar.open('Task added!', 'Close', { duration: 1200 });
       },
       error: err => {
@@ -62,23 +62,33 @@ export class TaskListComponent implements OnInit {
     });
   }
 
- toggleCompleted(task: Task) {
-  const updatedTask = { ...task, completed: !task.completed };
-  console.log('Toggle completed, wysyłane do backendu:', updatedTask); // DEBUG
+  toggleCompleted(task: Task) {
+    const updatedTask = { ...task, completed: !task.completed };
+    this.taskService.updateTask(updatedTask).subscribe(
+      (responseTask) => {
+        Object.assign(task, responseTask);
+        this.snackBar.open('Task updated!', 'Close', { duration: 1000 });
+      },
+      (error) => {
+        this.snackBar.open('Update failed!', 'Close', { duration: 2000 });
+      }
+    );
+  }
 
-  this.taskService.updateTask(updatedTask).subscribe(
-    (responseTask) => {
-      // Aktualizujemy taska z odpowiedzi backendu!
-      Object.assign(task, responseTask);
-      this.snackBar.open('Task updated!', 'Close', { duration: 1000 });
-    },
-    (error) => {
-      this.snackBar.open('Update failed!', 'Close', { duration: 2000 });
-      console.error('Update failed!', error);
-    }
-  );
-}
-
+  // Najważniejsza nowa metoda!
+  onLabelChange(task: Task, labelId: number) {
+    if (task.labelId === labelId) return; // nic nie rób jeśli bez zmiany
+    const updatedTask = { ...task, labelId };
+    this.taskService.updateTask(updatedTask).subscribe(
+      (updated) => {
+        Object.assign(task, updated);
+        this.snackBar.open('Label changed!', 'Close', { duration: 1000 });
+      },
+      (err) => {
+        this.snackBar.open('Failed to change label!', 'Close', { duration: 2000 });
+      }
+    );
+  }
 
   startEdit(task: Task) {
     this.editingTaskId = task.id!;

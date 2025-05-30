@@ -5,6 +5,11 @@
     <mat-form-field appearance="outline">
       <input matInput placeholder="New task" [(ngModel)]="newTask.title" name="label" required>
     </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-select placeholder="Label" [(ngModel)]="newTask.labelId" name="newLabelId" required>
+        <mat-option *ngFor="let label of labels" [value]="label.id">{{ label.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
     <button mat-raised-button color="primary" type="submit">Add</button>
   </form>
 
@@ -13,7 +18,12 @@
       <span [ngClass]="{'task-label': true, 'completed': task.completed}">
         {{ task.title }}
       </span>
-<input type="checkbox" [checked]="task.completed" (change)="toggleCompleted(task)">
+      <mat-form-field appearance="outline" class="label-select">
+        <mat-select [value]="task.labelId" (selectionChange)="onLabelChange(task, $event.value)">
+          <mat-option *ngFor="let label of labels" [value]="label.id">{{ label.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <input type="checkbox" [checked]="task.completed" (change)="toggleCompleted(task)">
       <span class="action-btns">
         <button mat-icon-button color="accent" (click)="startEdit(task)">
           <mat-icon>edit</mat-icon>
@@ -24,7 +34,14 @@
       </span>
     </ng-container>
     <ng-template #editMode>
-      <input matInput class="edit-input" [(ngModel)]="editTask.title" name="editLabel{{task.id}}">
+      <mat-form-field appearance="outline" class="edit-title">
+        <input matInput [(ngModel)]="editTask.title" name="editTitle{{task.id}}">
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="edit-label">
+        <mat-select [(ngModel)]="editTask.labelId" name="editLabelId{{task.id}}">
+          <mat-option *ngFor="let label of labels" [value]="label.id">{{ label.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
       <span class="action-btns">
         <button mat-icon-button color="primary" (click)="saveEdit(task)">
           <mat-icon>check</mat-icon>

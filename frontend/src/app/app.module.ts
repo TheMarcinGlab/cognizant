@@ -3,13 +3,19 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { TaskListComponent } from './components/task-list/task-list.component';
 import { HttpClientModule } from '@angular/common/http';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatInputModule } from '@angular/material/input';
+
 import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatIconModule } from '@angular/material/icon';
+
+// Angular Material
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule }     from '@angular/material/input';
+import { MatSelectModule }    from '@angular/material/select';
+import { MatButtonModule }    from '@angular/material/button';
+import { MatCheckboxModule }  from '@angular/material/checkbox';
+import { MatIconModule }      from '@angular/material/icon';
+import { MatSnackBarModule }  from '@angular/material/snack-bar';
+import { MatOptionModule }    from '@angular/material/core';
 
 @NgModule({
   declarations: [
@@ -19,13 +25,16 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [
     BrowserModule,
     HttpClientModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
     MatButtonModule,
     MatCheckboxModule,
-    MatSnackBarModule,
-    MatInputModule,
-    MatIconModule,  
-    FormsModule,
-    BrowserAnimationsModule
+    MatIconModule,
+    MatSnackBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]
