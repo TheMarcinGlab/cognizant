@@ -30,7 +30,7 @@ public class TaskService {
     public Mono<TaskDTO> createTask(TaskDTO dto) {
         return Mono.just(dto)
                 .flatMap(d -> labelRepository.findById(d.getLabelId())
-                        .switchIfEmpty(Mono.error(new RuntimeException("Etykieta nie znaleziona")))
+                        .switchIfEmpty(Mono.error(new RuntimeException("Label not found")))
                 )
                 .flatMap(label -> {
                     Task task = Task.builder()
@@ -46,7 +46,7 @@ public class TaskService {
 
     public Mono<TaskDTO> updateTask(Long id, TaskDTO dto) {
         return taskRepository.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("Zadanie nie znalezione")))
+                .switchIfEmpty(Mono.error(new RuntimeException("Task not found")))
                 .flatMap(task -> {
                     task.setTitle(dto.getTitle());
                     task.setCompleted(dto.isCompleted());

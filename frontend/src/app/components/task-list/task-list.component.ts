@@ -36,19 +36,18 @@ export class TaskListComponent implements OnInit {
 
   }
 
-   // Pobranie i połączenie strumieni RxJS + filtr
+   // Get and connect RxJS + filtr
  private loadData() {
     combineLatest([
       this.taskService.getTasks(),
       this.taskService.getLabels()
     ]).subscribe(([tasks, labels]) => {
       this.labels = labels;
-      // Wzbogacamy zadania o labelName
       let withLabels = tasks.map(t => ({
         ...t,
         labelName: labels.find(l => l.id === t.labelId)?.name || ''
       }));
-      // Aplikujemy filtr
+      // Filtr
       this.tasks = this.applyFilter(withLabels);
     });
   }
@@ -68,7 +67,6 @@ export class TaskListComponent implements OnInit {
     }
   }
 
-    // Wywołanie przy zmianie opcji filtra
   onFilterChange(option: FilterOption) {
     this.filterOption = option;
     this.loadData();
@@ -76,8 +74,8 @@ export class TaskListComponent implements OnInit {
 
    private listenNotifications() {
     this.taskService.getNotifications().subscribe(
-      message => this.snackBar.open(message, 'Zamknij', { duration: 2000 }),
-      err => console.error('Błąd SSE:', err)
+      message => this.snackBar.open(message, 'Close', { duration: 2000 }),
+      err => console.error('Error SSE:', err)
     );
   }
 
@@ -130,9 +128,9 @@ export class TaskListComponent implements OnInit {
     );
   }
 
-  // Najważniejsza nowa metoda!
+
   onLabelChange(task: Task, labelId: number) {
-    if (task.labelId === labelId) return; // nic nie rób jeśli bez zmiany
+    if (task.labelId === labelId) return; 
     const updatedTask = { ...task, labelId };
     this.taskService.updateTask(updatedTask).subscribe(
       (updated) => {

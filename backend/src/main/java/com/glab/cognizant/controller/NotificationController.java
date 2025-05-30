@@ -20,7 +20,7 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    // Endpoint SSE – klienci otwierają połączenie i nasłuchują eventów
+    // Endpoint SSE
     @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<String>> streamNotifications() {
         return notificationService.getNotifications();

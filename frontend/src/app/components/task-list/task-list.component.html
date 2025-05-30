@@ -1,7 +1,7 @@
 <div class="container">
-  <div class="header">Ważne Zadania</div>
+  <div class="header">Taks App</div>
 
-  <!-- Panel filtrów -->
+  <!-- Filtr panel -->
   <mat-button-toggle-group
     name="filter"
     [(ngModel)]="filterOption"
@@ -9,19 +9,19 @@
     aria-label="Filtr zadań"
     class="filter-group"
   >
-    <mat-button-toggle value="ALL">Wszystkie</mat-button-toggle>
-    <mat-button-toggle value="COMPLETED">Ukończone</mat-button-toggle>
-    <mat-button-toggle value="INCOMPLETE">Nieukończone</mat-button-toggle>
+    <mat-button-toggle value="ALL">All task</mat-button-toggle>
+    <mat-button-toggle value="COMPLETED">Finished</mat-button-toggle>
+    <mat-button-toggle value="INCOMPLETE">UnFinished</mat-button-toggle>
     <mat-button-toggle value="HOME">Home</mat-button-toggle>
     <mat-button-toggle value="WORK">Work</mat-button-toggle>
   </mat-button-toggle-group>
 
-  <!-- Formularz dodawania nowego zadania -->
+  <!-- Form add new task -->
   <form class="add-form" (ngSubmit)="addTask()">
     <mat-form-field appearance="outline">
       <input
         matInput
-        placeholder="Nowe zadanie"
+        placeholder="New Task"
         [(ngModel)]="newTask.title"
         name="title"
         required
@@ -29,7 +29,7 @@
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-select
-        placeholder="Etykieta"
+        placeholder="Label"
         [(ngModel)]="newTask.labelId"
         name="labelId"
         required
@@ -40,13 +40,13 @@
       </mat-select>
     </mat-form-field>
     <button mat-raised-button color="primary" type="submit">
-      Dodaj
+      Add
     </button>
   </form>
 
-  <!-- Lista zadań -->
+  <!-- List task -->
   <div *ngFor="let task of tasks" class="task-item">
-    <!-- Widok zwykły -->
+    <!-- view normal -->
     <ng-container *ngIf="editingTaskId !== task.id; else editMode">
       <span
         class="task-label"
@@ -90,7 +90,7 @@
       </span>
     </ng-container>
 
-    <!-- Tryb edycji -->
+    <!-- Edit view -->
     <ng-template #editMode>
       <mat-form-field appearance="outline" class="edit-title">
         <input

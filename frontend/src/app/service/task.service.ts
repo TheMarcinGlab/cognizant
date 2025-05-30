@@ -39,7 +39,6 @@ export class TaskService {
 
     es.onmessage = event => this.ngZone.run(() => observer.next(event.data));
     es.onerror   = () => {
-      // Nie zamykajmy w error, tylko pozwólmy na retry linii poniżej
       es.close();
       observer.complete();
     };

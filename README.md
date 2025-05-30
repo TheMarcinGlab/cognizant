@@ -1,0 +1,1 @@
+Good morning. In order to start the task, you need to enter the following command in the project directory terminal: docker-compose up --build

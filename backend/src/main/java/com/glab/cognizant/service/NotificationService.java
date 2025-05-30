@@ -17,12 +17,12 @@ public class NotificationService {
         return sink.asFlux();
     }
 
-    // add.update task
+    // Add update task
     public void publishTaskUpdate(Long taskId, String title) {
         ServerSentEvent<String> event = ServerSentEvent.<String>builder()
                 .event("task-update")
                 .id(taskId.toString())
-                .data("Zadanie zaktualizowane: " + title + " (ID: " + taskId + ")")
+                .data("Update task: " + title + " (ID: " + taskId + ")")
                 .build();
         sink.tryEmitNext(event);
     }
