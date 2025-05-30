@@ -16,6 +16,8 @@ import { MatCheckboxModule }  from '@angular/material/checkbox';
 import { MatIconModule }      from '@angular/material/icon';
 import { MatSnackBarModule }  from '@angular/material/snack-bar';
 import { MatOptionModule }    from '@angular/material/core';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+
 
 @NgModule({
   declarations: [
@@ -29,6 +31,7 @@ import { MatOptionModule }    from '@angular/material/core';
     BrowserAnimationsModule,
     MatFormFieldModule,
     MatInputModule,
+    MatButtonToggleModule,
     MatSelectModule,
     MatOptionModule,
     MatButtonModule,

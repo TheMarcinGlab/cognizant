@@ -1,17 +1,29 @@
 package com.glab.cognizant.service;
 
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 @Service
 public class NotificationService {
-    @Async
-    public void sendTaskUpdateNotification(Long taskId, String title) {
-        try {
-            Thread.sleep(2000);
-            System.out.println("[ASYNC NOTIFICATION] Task updated: " + title + " (ID: " + taskId + ")");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+
+    // Sink typu multicast to send event SSE
+    private final Sinks.Many<ServerSentEvent<String>> sink =
+            Sinks.many().multicast().onBackpressureBuffer();
+
+    // Stream SSE
+    public Flux<ServerSentEvent<String>> getNotifications() {
+        return sink.asFlux();
+    }
+
+    // add.update task
+    public void publishTaskUpdate(Long taskId, String title) {
+        ServerSentEvent<String> event = ServerSentEvent.<String>builder()
+                .event("task-update")
+                .id(taskId.toString())
+                .data("Zadanie zaktualizowane: " + title + " (ID: " + taskId + ")")
+                .build();
+        sink.tryEmitNext(event);
     }
 }

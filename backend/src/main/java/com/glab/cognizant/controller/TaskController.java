@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/tasks")
-@Tag(name = "Task API", description = "CRUD operations on tasks")
+@Tag(name = "Task API", description = "CRUD operacje na zadaniach")
 @CrossOrigin(origins = "http://localhost:4200")
 public class TaskController {
     private final TaskService service;
@@ -20,25 +20,25 @@ public class TaskController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all tasks")
+    @Operation(summary = "Pobierz wszystkie zadania")
     public Flux<TaskDTO> getAll() {
         return service.getAllTasks();
     }
 
     @PostMapping
-    @Operation(summary = "Create new task")
+    @Operation(summary = "Utwórz nowe zadanie")
     public Mono<TaskDTO> create(@RequestBody TaskDTO task) {
         return service.createTask(task);
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update task")
+    @Operation(summary = "Aktualizuj zadanie")
     public Mono<TaskDTO> update(@PathVariable Long id, @RequestBody TaskDTO task) {
         return service.updateTask(id, task);
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete task")
+    @Operation(summary = "Usuń zadanie")
     public Mono<Void> delete(@PathVariable Long id) {
         return service.deleteTask(id);
     }

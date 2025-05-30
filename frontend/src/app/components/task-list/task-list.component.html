@@ -1,52 +1,131 @@
 <div class="container">
-  <div class="header">Important Tasks</div>
+  <div class="header">Ważne Zadania</div>
 
+  <!-- Panel filtrów -->
+  <mat-button-toggle-group
+    name="filter"
+    [(ngModel)]="filterOption"
+    (ngModelChange)="onFilterChange($event)"
+    aria-label="Filtr zadań"
+    class="filter-group"
+  >
+    <mat-button-toggle value="ALL">Wszystkie</mat-button-toggle>
+    <mat-button-toggle value="COMPLETED">Ukończone</mat-button-toggle>
+    <mat-button-toggle value="INCOMPLETE">Nieukończone</mat-button-toggle>
+    <mat-button-toggle value="HOME">Home</mat-button-toggle>
+    <mat-button-toggle value="WORK">Work</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <!-- Formularz dodawania nowego zadania -->
   <form class="add-form" (ngSubmit)="addTask()">
     <mat-form-field appearance="outline">
-      <input matInput placeholder="New task" [(ngModel)]="newTask.title" name="label" required>
+      <input
+        matInput
+        placeholder="Nowe zadanie"
+        [(ngModel)]="newTask.title"
+        name="title"
+        required
+      />
     </mat-form-field>
     <mat-form-field appearance="outline">
-      <mat-select placeholder="Label" [(ngModel)]="newTask.labelId" name="newLabelId" required>
-        <mat-option *ngFor="let label of labels" [value]="label.id">{{ label.name }}</mat-option>
+      <mat-select
+        placeholder="Etykieta"
+        [(ngModel)]="newTask.labelId"
+        name="labelId"
+        required
+      >
+        <mat-option *ngFor="let label of labels" [value]="label.id">
+          {{ label.name }}
+        </mat-option>
       </mat-select>
     </mat-form-field>
-    <button mat-raised-button color="primary" type="submit">Add</button>
+    <button mat-raised-button color="primary" type="submit">
+      Dodaj
+    </button>
   </form>
 
+  <!-- Lista zadań -->
   <div *ngFor="let task of tasks" class="task-item">
+    <!-- Widok zwykły -->
     <ng-container *ngIf="editingTaskId !== task.id; else editMode">
-      <span [ngClass]="{'task-label': true, 'completed': task.completed}">
+      <span
+        class="task-label"
+        [ngClass]="{ completed: task.completed }"
+      >
         {{ task.title }}
       </span>
+
       <mat-form-field appearance="outline" class="label-select">
-        <mat-select [value]="task.labelId" (selectionChange)="onLabelChange(task, $event.value)">
-          <mat-option *ngFor="let label of labels" [value]="label.id">{{ label.name }}</mat-option>
+        <mat-select
+          [value]="task.labelId"
+          (selectionChange)="onLabelChange(task, $event.value)"
+        >
+          <mat-option *ngFor="let label of labels" [value]="label.id">
+            {{ label.name }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
-      <input type="checkbox" [checked]="task.completed" (change)="toggleCompleted(task)">
+
+      <input
+        type="checkbox"
+        [checked]="task.completed"
+        (change)="toggleCompleted(task)"
+      />
+
       <span class="action-btns">
-        <button mat-icon-button color="accent" (click)="startEdit(task)">
+        <button
+          mat-icon-button
+          color="accent"
+          (click)="startEdit(task)"
+        >
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="deleteTask(task)">
+        <button
+          mat-icon-button
+          color="warn"
+          (click)="deleteTask(task)"
+        >
           <mat-icon>delete</mat-icon>
         </button>
       </span>
     </ng-container>
+
+    <!-- Tryb edycji -->
     <ng-template #editMode>
       <mat-form-field appearance="outline" class="edit-title">
-        <input matInput [(ngModel)]="editTask.title" name="editTitle{{task.id}}">
+        <input
+          matInput
+          [(ngModel)]="editTask.title"
+          [name]="'editTitle' + task.id"
+          required
+        />
       </mat-form-field>
+
       <mat-form-field appearance="outline" class="edit-label">
-        <mat-select [(ngModel)]="editTask.labelId" name="editLabelId{{task.id}}">
-          <mat-option *ngFor="let label of labels" [value]="label.id">{{ label.name }}</mat-option>
+        <mat-select
+          [(ngModel)]="editTask.labelId"
+          [name]="'editLabel' + task.id"
+          required
+        >
+          <mat-option *ngFor="let label of labels" [value]="label.id">
+            {{ label.name }}
+          </mat-option>
         </mat-select>
       </mat-form-field>
+
       <span class="action-btns">
-        <button mat-icon-button color="primary" (click)="saveEdit(task)">
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="saveEdit(task)"
+        >
           <mat-icon>check</mat-icon>
         </button>
-        <button mat-icon-button (click)="cancelEdit()">
+        <button
+          mat-icon-button
+          color="default"
+          (click)="cancelEdit()"
+        >
           <mat-icon>close</mat-icon>
         </button>
       </span>

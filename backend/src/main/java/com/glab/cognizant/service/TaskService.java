@@ -14,7 +14,9 @@ public class TaskService {
     private final LabelRepository labelRepository;
     private final NotificationService notificationService;
 
-    public TaskService(TaskRepository taskRepository, LabelRepository labelRepository, NotificationService notificationService) {
+    public TaskService(TaskRepository taskRepository,
+                       LabelRepository labelRepository,
+                       NotificationService notificationService) {
         this.taskRepository = taskRepository;
         this.labelRepository = labelRepository;
         this.notificationService = notificationService;
@@ -25,46 +27,40 @@ public class TaskService {
                 .map(this::toDTO);
     }
 
-    // create new task
     public Mono<TaskDTO> createTask(TaskDTO dto) {
-        if (dto.getLabelId() == null) {
-            return Mono.error(new IllegalArgumentException("labelId must not be null"));
-        }
-        return labelRepository.findById(dto.getLabelId())
-                .switchIfEmpty(Mono.error(new RuntimeException("Label not found")))
+        return Mono.just(dto)
+                .flatMap(d -> labelRepository.findById(d.getLabelId())
+                        .switchIfEmpty(Mono.error(new RuntimeException("Etykieta nie znaleziona")))
+                )
                 .flatMap(label -> {
                     Task task = Task.builder()
                             .title(dto.getTitle())
                             .completed(dto.isCompleted())
-                            .labelId(label.getId())
+                            .labelId(dto.getLabelId())
                             .build();
                     return taskRepository.save(task);
                 })
-                .doOnNext(saved -> notificationService.sendTaskUpdateNotification(saved.getId(), saved.getTitle()))
+                .doOnNext(saved -> notificationService.publishTaskUpdate(saved.getId(), saved.getTitle()))
                 .map(this::toDTO);
     }
 
-    // update task
     public Mono<TaskDTO> updateTask(Long id, TaskDTO dto) {
         return taskRepository.findById(id)
-                .switchIfEmpty(Mono.error(new RuntimeException("Task not found")))
+                .switchIfEmpty(Mono.error(new RuntimeException("Zadanie nie znalezione")))
                 .flatMap(task -> {
                     task.setTitle(dto.getTitle());
-                    task.setCompleted(dto.isCompleted()); // TO MUSI BYĆ!
+                    task.setCompleted(dto.isCompleted());
                     task.setLabelId(dto.getLabelId());
                     return taskRepository.save(task);
                 })
-                .doOnNext(updated -> notificationService.sendTaskUpdateNotification(updated.getId(), updated.getTitle()))
+                .doOnNext(updated -> notificationService.publishTaskUpdate(updated.getId(), updated.getTitle()))
                 .map(this::toDTO);
     }
 
-
-    // delete task
     public Mono<Void> deleteTask(Long id) {
         return taskRepository.deleteById(id);
     }
 
-    // map entity to dto
     private TaskDTO toDTO(Task task) {
         TaskDTO dto = new TaskDTO();
         dto.setId(task.getId());

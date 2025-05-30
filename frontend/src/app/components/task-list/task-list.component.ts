@@ -1,8 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { combineLatest } from 'rxjs';
 import { TaskService } from '../../service/task.service';
 import { Task } from '../../model/task.model';
 import { Label } from '../../model/label.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+
+
+type FilterOption = 
+  'ALL' | 'COMPLETED' | 'INCOMPLETE' | 'HOME' | 'WORK';
+
 
 @Component({
   selector: 'app-task-list',
@@ -10,11 +16,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./task-list.component.css']
 })
 export class TaskListComponent implements OnInit {
-  tasks: Task[] = [];
+ tasks: Task[] = [];
   labels: Label[] = [];
   newTask: Partial<Task> = { title: '', completed: false, labelId: undefined };
   editingTaskId: number | null = null;
   editTask: Partial<Task> = {};
+
+
+  filterOption: FilterOption = 'ALL';
 
   constructor(
     private taskService: TaskService,
@@ -22,8 +31,54 @@ export class TaskListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.fetchTasks();
-    this.fetchLabels();
+   this.loadData();
+    this.listenNotifications();
+
+  }
+
+   // Pobranie i połączenie strumieni RxJS + filtr
+ private loadData() {
+    combineLatest([
+      this.taskService.getTasks(),
+      this.taskService.getLabels()
+    ]).subscribe(([tasks, labels]) => {
+      this.labels = labels;
+      // Wzbogacamy zadania o labelName
+      let withLabels = tasks.map(t => ({
+        ...t,
+        labelName: labels.find(l => l.id === t.labelId)?.name || ''
+      }));
+      // Aplikujemy filtr
+      this.tasks = this.applyFilter(withLabels);
+    });
+  }
+
+    private applyFilter(tasks: Array<Task & { labelName: string }>): Task[] {
+    switch (this.filterOption) {
+      case 'COMPLETED':
+        return tasks.filter(t => t.completed);
+      case 'INCOMPLETE':
+        return tasks.filter(t => !t.completed);
+      case 'HOME':
+        return tasks.filter(t => t.labelName === 'Home');
+      case 'WORK':
+        return tasks.filter(t => t.labelName === 'Work');
+      default: // 'ALL'
+        return tasks;
+    }
+  }
+
+    // Wywołanie przy zmianie opcji filtra
+  onFilterChange(option: FilterOption) {
+    this.filterOption = option;
+    this.loadData();
+  }
+
+   private listenNotifications() {
+    this.taskService.getNotifications().subscribe(
+      message => this.snackBar.open(message, 'Zamknij', { duration: 2000 }),
+      err => console.error('Błąd SSE:', err)
+    );
   }
 
   fetchTasks() {
@@ -108,4 +163,5 @@ export class TaskListComponent implements OnInit {
   cancelEdit() {
     this.editingTaskId = null;
   }
+  
 }
